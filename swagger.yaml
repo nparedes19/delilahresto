@@ -1,0 +1,478 @@
+swagger: "2.0"
+info:
+  description: "API para pedidos de comida deliciosa. Como cliente, podras registrarte, para ver el listado de nuestros productos y realizar una orden. Los administradores tienen la posibilidad de recibir pedidos y actualizarlos"
+  version: "1.0.0"
+  title: "Delilah Restó"
+  contact:
+    email: "natalia_paredes13@hotmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "delilahresto.swagger.io"
+basePath: "/v2"
+tags:
+- name: "login"
+  description: "Endpoint para iniciar sesión"
+- name: "usuarios"
+  description: "Endpoints para crear y manipular información de usuarios"
+- name: "productos"
+  description: "Endpoints para crear y manipular información de los productos"
+- name: "pedidos"
+  description: "Enpoints para crear y manipular información de pedidos"
+schemes:
+- "https"
+- "http"
+paths:
+  /login:
+    post:
+      tags:
+      - "login"
+      summary: "Iniciar sesión en la aplicación"
+      description: "Endpoint para iniciar sesión con las credenciales personales de cada usuario"
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "correo"
+        in: "query"
+        description: "El correo del usuario"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "La contraseña del usuario"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Log in exitoso"
+          schema:
+            type: "string"
+        "400":
+          description: "Correo o contraseña incorrectos"
+  /usuarios:
+    post:
+      tags:
+      - "usuarios"
+      summary: "Crear un usuario"
+      description: "En este endpoint se crea un usuario desde cero"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Crear el objeto para el usuario"
+        required: true
+        schema:
+          $ref: "#/definitions/Usuarios"
+      responses:
+        "201":
+          description: "Usuario creado exitosamente"
+          schema:
+            type: "string" 
+    get:
+      tags:
+      - "usuarios"
+      summary: "Traer el listado completo de usuarios"
+      description: "En este endpoint se trae el listado de todos los usuarios que existen con la información de cada uno"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/UsuariosGet"
+        "400":
+          description: "Error"
+      security:
+      - bearerAuth: []
+  /usuarios/id:
+    get:
+      tags:
+      - "usuarios"
+      summary: "Traer usuario por ID"
+      description: ""
+      operationId: "getUserByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "El id del usuario que se necesita"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/UsuariosGet"
+        "404":
+          description: "El usuario no existe"
+      security:
+      - bearerAuth: []
+  /productos:
+    get:
+      tags:
+      - "productos"
+      summary: "Traer el listado completo de productos"
+      description: "En este endpoint se trae el listado de todos los productos que existen con la información de cada uno"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/ProductosGet"
+        "400":
+          description: "Error"
+    post:
+      tags:
+      - "productos"
+      summary: "Crear un producto"
+      description: "En este endpoint se crea un producto desde cero"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Crear el objeto para el producto que se va a crear"
+        required: true
+        schema:
+          $ref: "#/definitions/Productos"
+      responses:
+        "201":
+          description: "Producto creado exitosamente"
+          schema:
+            type: "string"
+      security:
+      - bearerAuth: []
+  /productos/id:
+    get:
+      tags:
+      - "productos"
+      summary: "Traer producto por ID"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "El id del producto que se necesita"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/ProductosGet"
+        "404":
+          description: "El producto no existe"
+        "400":
+          description: "Error"
+    delete:
+      tags:
+      - "productos"
+      summary: "Borrar un producto"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "El id del producto que se quiere borrar"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "Producto eliminado"
+        "404":
+          description: "El producto no existe"
+        "400":
+          description: "Error"
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - "productos"
+      summary: "Actualizar un producto"
+      description: "En este endpoint se actualiza un producto"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Crear el objeto para actualizar un pedido"
+        required: true
+        schema:
+          $ref: "#/definitions/Productos"
+      responses:
+        "201":
+          description: "Producto actualizado"
+          schema:
+            type: "string"
+        "404":
+          description: "El producto no existe"
+        "400":
+          description: "Error"
+      security:
+      - bearerAuth: []
+  /pedidos:
+    post:
+      tags:
+      - "pedidos"
+      summary: "Crear un pedido"
+      description: "En este endpoint se crea un pedido"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Crear el objeto para pedidos"
+        required: true
+        schema:
+          $ref: "#/definitions/Pedidos"
+      responses:
+        "201":
+          description: "Orden creada exitosamente"
+          schema:
+            type: "string"
+        "400":
+          description: "Error"
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - "pedidos"
+      summary: "Traer todo el listado de pedidos"
+      description: ""
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/PedidosGet"
+        "404":
+          description: "El pedido no existe"
+        "400":
+          description: "Error"
+      security:
+      - bearerAuth: []
+  /pedidos/id:
+    delete:
+      tags:
+      - "pedidos"
+      summary: "Borrar un pedido"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "El id del pedido que se quiere borrar"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "El pedido fue eliminado con exito"
+        "400":
+          description: "El pedido no existe"
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - "pedidos"
+      summary: "Actualizar el estado de un pedido"
+      description: "En este endpoint se actualiza el estado del pedido"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Crear el objeto para actualizar un pedido"
+        required: true
+        schema:
+          $ref: "#/definitions/PedidosAct"
+      responses:
+        "201":
+          description: "El estado del pedido ha sido actualizado con exito"
+          schema:
+            type: "string"
+        "400":
+          description: "Error"
+        "404":
+          description: "El pedido no existe"
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - "pedidos"
+      summary: "Traer pedido por ID"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "El id del pedido que se necesita"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/PedidosGet"
+        "404":
+          description: "El pedido no existe"
+        "400":
+          description: "Error"
+      security:
+      - bearerAuth: []
+securityDefinitions:
+  bearerAuth:
+    type: "oauth2"
+    authorizationUrl: "http://delilahresto.swagger.io/oauth/dialog"
+    flow: "implicit"
+definitions:
+  Usuarios:
+    type: "object"
+    properties:
+      usuario:
+        type: "string"
+      fullname:
+        type: "string"
+      correo:
+        type: "string"
+      telefono:
+        type: "string"
+      direccion:
+        type: "string"
+      password:
+        type: "string"
+    xml:
+      name: "User"
+  UsuariosGet:
+    type: "object"
+    properties:
+      id_usuario:
+        type: "integer"
+        format: "int64"
+      usuario:
+        type: "string"
+      fullname:
+        type: "string"
+      correo:
+        type: "string"
+      telefono:
+        type: "string"
+      direccion:
+        type: "string"
+      password:
+        type: "string"
+      is_admin:
+        type: "integer"
+        format: "int64"
+    xml:
+      name: "User"
+  ProductosGet:
+    type: "object"
+    properties:
+      id_producto:
+        type: "integer"
+        format: "int64"
+      producto:
+        type: "string"
+      precio:
+        type: "integer"
+        format: "int64"
+    xml:
+      name: "User"
+  Productos:
+    type: "object"
+    properties:
+      producto:
+        type: "string"
+      precio:
+        type: "integer"
+        format: "int64"
+    xml:
+      name: "User"
+  Pedidos:
+    type: "object"
+    properties:
+      id_pago:
+        type: "integer"
+        format: "int64"
+      items:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id_producto:
+              type: "integer"
+              format: "int64"
+            cantidad:
+              type: "integer"
+              format: "int64"
+    xml:
+      name: "User"
+  PedidosAct:
+    type: "object"
+    properties:
+      id_estado:
+        type: "integer"
+        format: "int64"
+  PedidosGet:
+    type: "object"
+    properties:
+      pedidosFinal:
+        type: "object"
+        properties:
+          pedido:
+            type: "array"
+            items:
+              type: "object"
+              properties:
+                estado:
+                  type: "string"
+                fecha:
+                  type: "string"
+                id_pedido:
+                  type: "integer"
+                  format: "int64"
+                cantidad:
+                  type: "integer"
+                  format: "int64"
+                producto:
+                  type: "string"
+                total:
+                  type: "integer"
+                  format: "int64"
+                pago_nombre:
+                  type: "string"
+                fullname:
+                  type: "string"
+                direccion:
+                  type: "string"
+                telefono:
+                  type: "string"
+          pedidoDetalles:
+            type: "array"
+            items:
+              type: "object"
+              properties:
+                id_pedido:
+                  type: "integer"
+                  format: "int64"
+                cantidad:
+                  type: "integer"
+                  format: "int64"
+                precio:
+                  type: "integer"
+                  format: "int64"
+                producto:
+                  type: "string"
